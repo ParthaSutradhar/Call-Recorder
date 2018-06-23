@@ -40,14 +40,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
     
-    public void Hack(){
-        
-    }
-
-    public void Stupid(){
-        
-    }
-
 
     @Override
     protected void onStart() {
