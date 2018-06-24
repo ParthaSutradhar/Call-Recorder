@@ -1,4 +1,4 @@
-package com.xemosoft.callrecorder;
+package com.xemosoft.callrecorder.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,14 +19,18 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
-import android.widget.Switch;
 
+import com.xemosoft.callrecorder.R;
 import com.xemosoft.callrecorder.fragments.RecordListFragment;
 import com.xemosoft.callrecorder.utils.Util;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+
+    private static final String TAG = MainActivity.class.getSimpleName();
+
 
     private SwitchCompat toolbar_switch;
     private Toolbar toolbar;
