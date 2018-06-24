@@ -20,4 +20,9 @@ public class Util {
         return sharedPreferences.getBoolean(context.getString(R.string.state),false);
     }
 
+
+    public static boolean checkForPermission(){
+        return false;
+    }
+
 }

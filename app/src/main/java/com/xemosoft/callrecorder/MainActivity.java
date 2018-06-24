@@ -1,36 +1,68 @@
 package com.xemosoft.callrecorder;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.MenuItemCompat;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import com.xemosoft.callrecorder.fragments.RecordListFragment;
 import com.xemosoft.callrecorder.utils.Util;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Switch toolbar_switch;
     private Toolbar toolbar;
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle drawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.navigation_drawer);
 
         // Toolbar
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // setup drawer layout
+        drawerLayout = findViewById(R.id.drawer_layout);
+        drawerToggle = new ActionBarDrawerToggle(this,drawerLayout,0,0);
+        drawerLayout.addDrawerListener(drawerToggle);
+        drawerToggle.syncState();
+
+        // viewPager
+        viewPager = findViewById(R.id.viewPager);
+        tabLayout = findViewById(R.id.tabLayout);
+        TabFragmentsAdapter tabFragmentsAdapter = new TabFragmentsAdapter(getSupportFragmentManager());
+        // dynamically add fragments to activity view
+        tabFragmentsAdapter.addFragment(new RecordListFragment() , "Records");
+
+        viewPager.setAdapter(tabFragmentsAdapter);
+        tabLayout.setupWithViewPager(viewPager);
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -39,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
-    
+
 
     @Override
     protected void onStart() {
@@ -48,9 +80,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void checkForRecorderState() {
         boolean isOn = Util.getRecorderState(this);
-        if (isOn){
+        if (isOn) {
             toolbar_switch.setChecked(true);
-        }else{
+        } else {
             toolbar_switch.setChecked(false);
         }
     }
@@ -61,9 +93,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
-        MenuItem swithItem =  menu.findItem(R.id.switch_toolbar_menu);
+        MenuItem swithItem = menu.findItem(R.id.switch_toolbar_menu);
 
-        View view = MenuItemCompat.getActionView(swithItem);
+
+        View view = swithItem.getActionView();
 
         toolbar_switch = view.findViewById(R.id.toolbar_switch);
 
@@ -72,10 +105,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         toolbar_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
-                    Util.setRecorderState(true,MainActivity.this);
-                }else{
-                    Util.setRecorderState(false,MainActivity.this);
+                if (isChecked) {
+                    Util.setRecorderState(true, MainActivity.this);
+                } else {
+                    Util.setRecorderState(false, MainActivity.this);
                 }
             }
         });
@@ -90,10 +123,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int id = item.getItemId();
 
 
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+
+        if (id == android.R.id.home){
+            drawerLayout.openDrawer(Gravity.START);
         }
 
         return super.onOptionsItemSelected(item);
@@ -101,16 +137,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.toolbar_switch:
-                if (toolbar_switch.isChecked()){
-                    Util.setRecorderState(false,this);
+                if (toolbar_switch.isChecked()) {
+                    Util.setRecorderState(false, this);
                     toolbar_switch.setChecked(false);
-                }else{
-                    Util.setRecorderState(true,this);
+                } else {
+                    Util.setRecorderState(true, this);
                     toolbar_switch.setChecked(true);
                 }
                 break;
+        }
+    }
+
+    private class TabFragmentsAdapter extends FragmentStatePagerAdapter {
+
+        private ArrayList<Fragment> fragmentList;
+        private ArrayList<String> titleList;
+
+
+        public TabFragmentsAdapter(FragmentManager fm) {
+            super(fm);
+            fragmentList = new ArrayList<>();
+            titleList = new ArrayList<>();
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return fragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return fragmentList.size();
+        }
+
+        @Nullable
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return titleList.get(position);
+        }
+
+        public void addFragment(Fragment fragment,String title) {
+            fragmentList.add(fragment);
+            titleList.add(title);
         }
     }
 }
