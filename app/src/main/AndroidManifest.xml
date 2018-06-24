@@ -3,6 +3,7 @@
     package="com.xemosoft.callrecorder">
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
 
     <application
         android:fullBackupContent="true"
@@ -24,12 +25,15 @@
         </activity>
 
         <receiver
-            android:name=".receiver.PhoneReceiver"
+            android:name=".receiver.PhoneCallReceiver"
             android:enabled="true"
             android:exported="true">
 
             <intent-filter>
-                <action android:name="android.intent.action.NEW_OUTGOING_CALL"/>
+                <action android:name="android.intent.action.PHONE_STATE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
             </intent-filter>
 
         </receiver>

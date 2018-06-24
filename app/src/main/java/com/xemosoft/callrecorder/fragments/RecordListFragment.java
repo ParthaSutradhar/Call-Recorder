@@ -21,7 +21,6 @@ public class RecordListFragment extends Fragment {
 
 
 
-
         return view;
     }
 }

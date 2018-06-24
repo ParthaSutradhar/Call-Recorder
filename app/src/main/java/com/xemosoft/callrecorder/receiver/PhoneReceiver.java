@@ -1,16 +1,31 @@
 package com.xemosoft.callrecorder.receiver;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 
-public class PhoneReceiver extends BroadcastReceiver {
+import java.util.Date;
 
-
-    private static final String TAG = PhoneReceiver.class.getSimpleName();
+public class PhoneReceiver extends PhoneCallReceiver {
 
     @Override
-    public void onReceive(Context context, Intent intent) {
-
+    protected void onIncomingCallStarted(Context ctx, String number, Date start) {
+        
     }
+
+    @Override
+    protected void onOutgoingCallStarted(Context ctx, String number, Date start) {
+    }
+
+    @Override
+    protected void onIncomingCallEnded(Context ctx, String number, Date start, Date end) {
+    }
+
+    @Override
+    protected void onOutgoingCallEnded(Context ctx, String number, Date start, Date end) {
+    }
+
+    @Override
+    protected void onMissedCall(Context ctx, String number, Date start) {
+    }
+
+
 }
