@@ -1,6 +1,8 @@
 package com.xemosoft.callrecorder.service;
 
 import android.app.Service;
+import android.arch.persistence.room.Room;
+import android.arch.persistence.room.RoomDatabase;
 import android.content.Intent;
 import android.media.MediaRecorder;
 import android.os.Environment;
@@ -8,8 +10,11 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.xemosoft.callrecorder.database.AppDatabase;
+import com.xemosoft.callrecorder.database.Call;
+import com.xemosoft.callrecorder.utils.CryptoUtil;
+
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -20,6 +25,7 @@ public class RecorderService extends Service {
     private File root = Environment.getExternalStorageDirectory();
     private File dir = null;
     private static String savedNumber = null;
+    private long start,end;
 
 
     @Override
@@ -29,6 +35,9 @@ public class RecorderService extends Service {
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+        start = System.currentTimeMillis();
+
     }
 
     @Override
@@ -40,8 +49,8 @@ public class RecorderService extends Service {
             dir.mkdir();
         }
         try {
-            Log.d(TAG,savedNumber + dir.getAbsolutePath());
-            mRecorder.setOutputFile(dir.getAbsolutePath()+"/"+ savedNumber +" "+ getTime()+ ".3gp");
+            Log.d(TAG, savedNumber + dir.getAbsolutePath());
+            mRecorder.setOutputFile(dir.getAbsolutePath() + "/" + CryptoUtil.MD5(savedNumber + getTime()) + ".3gp");
             mRecorder.prepare();
             mRecorder.start();
         } catch (Exception e) {
@@ -54,7 +63,7 @@ public class RecorderService extends Service {
         long timeInMillis = System.currentTimeMillis();
         Calendar cal1 = Calendar.getInstance();
         cal1.setTimeInMillis(timeInMillis);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("hh-mm-ss a");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh-mm-ss");
         return dateFormat.format(cal1.getTime());
     }
 
@@ -66,8 +75,24 @@ public class RecorderService extends Service {
 
     @Override
     public void onDestroy() {
+        saveToDatabase();
         mRecorder.stop();
         mRecorder.release();
         super.onDestroy();
+    }
+
+    private void saveToDatabase() {
+
+
+        end = System.currentTimeMillis();
+
+        Call call = new Call();
+        call.setNumber(savedNumber);
+        call.setDate(getTime());
+        call.setFileName(CryptoUtil.MD5(savedNumber+getTime()));
+        call.setTalkTime(String.valueOf(end-start));
+
+        AppDatabase appDatabase = Room.databaseBuilder(this,AppDatabase.class,"appdeve").allowMainThreadQueries().build();
+        appDatabase.getCallDao().insert(call);
     }
 }

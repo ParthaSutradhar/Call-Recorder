@@ -1,6 +1,8 @@
 package com.xemosoft.callrecorder.activity;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TabFragmentsAdapter tabFragmentsAdapter = new TabFragmentsAdapter(getSupportFragmentManager());
         // dynamically add fragments to activity view
         tabFragmentsAdapter.addFragment(new RecordListFragment() , "Records");
-
+        tabFragmentsAdapter.addFragment(new RecordListFragment() , "Records");
         viewPager.setAdapter(tabFragmentsAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
@@ -188,4 +190,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             titleList.add(title);
         }
     }
+    
+
 }

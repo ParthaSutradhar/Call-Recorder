@@ -13,7 +13,6 @@ import com.xemosoft.callrecorder.utils.Util;
 
 public class PhoneReceiver extends BroadcastReceiver {
 
-
     private static int lastState = TelephonyManager.CALL_STATE_IDLE;
     private static final String TAG = PhoneReceiver.class.getSimpleName();
     private static String savedNumber = null;
